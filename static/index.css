@@ -1,0 +1,29 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.widget-main-style{
+    position:relative;
+    width:100vw;
+    height:100vh;
+}
+.widget-wrapper{
+    position:relative;
+    background-color:lightblue;
+    height:100%;
+    display:flex;
+    flex-direction: column;
+    align-items:center;
+    justify-content:center;
+}
+
+#clockId{
+    background-color: rgba(233, 109, 109, 0.5);
+    backdrop-filter: blur(5px);
+    font-size: 2rem;
+    padding: 5px;
+    border-radius:5px;
+    box-shadow: 0px 0px 10px rgb(233, 242, 173);
+}

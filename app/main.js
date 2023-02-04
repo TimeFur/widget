@@ -4,8 +4,9 @@ window.addEventListener('load', () => {
     timerFunc(clockEle)
 
     extBtn.addEventListener('click', (e) => {
-        console.log("extension click")
-        window.postMessage({ cmd: "FROM_WIDGET_GET_SHOOT_IMAGES" }, "*")
+        console.log("extension click-1")
+        //iframe to parent
+        window.top.postMessage({ cmd: "FROM_WIDGET_GET_SHOOT_IMAGES" }, "*")
     })
 })
 
@@ -20,6 +21,7 @@ window.addEventListener('message', (e) => {
             getExtensionResponse(cmd, data)
             break;
         default:
+            console.log("missing cmd:", cmd)
             break;
     }
 })

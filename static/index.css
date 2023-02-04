@@ -27,3 +27,18 @@
     border-radius:5px;
     box-shadow: 0px 0px 10px rgb(233, 242, 173);
 }
+
+/* Extension style */
+.notify-btn{
+    cursor:pointer;
+    background:rgb(233, 242, 173,0.3);
+    padding:5px;
+    border-radius: 6px;
+    box-shadow: 1px 2px lightcoral;
+}
+
+#extImgId{
+    width:10%;
+    height:auto;
+    border-radius:10px;
+}

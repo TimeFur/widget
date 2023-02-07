@@ -25,17 +25,30 @@ window.addEventListener('message', (e) => {
             break;
     }
 })
-
+/*********************************************************
+ *                  Local methods
+ *********************************************************/
 const getExtensionResponse = (cmd, data) => {
     switch (cmd) {
         case "FROM_CONTENT_REPONSE_WIDGET_REQ":
-            var extImg = document.querySelector('#extImgId')
-            extImg.src = data
+            // var extImg = document.querySelector('.ext-img-style')
+            // extImg.src = data
+            insertImgToList(data)
             break;
     }
     // extImgId
 }
 
+const insertImgToList = (imgSrc) => {
+    var listWrapper = document.querySelector("#imgListId")
+
+    //create img-html
+    var imgEle = document.createElement("img")
+    imgEle.src = imgSrc
+    imgEle.className = "ext-img-style"
+
+    listWrapper.appendChild(imgEle)
+}
 const timerFunc = (ele = null) => {
     if (ele == null) return
     ele.textContent = 0

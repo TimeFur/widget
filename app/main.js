@@ -9,7 +9,10 @@ window.addEventListener('load', () => {
 
     clipBtn.addEventListener('click', (e) => {
         console.log("Clip")
-        navigator.clipboard.writeText("https://i.pinimg.com/236x/32/26/3c/32263c697d9f55a81aa60f77aebc1165.jpg")
+        // navigator.clipboard.writeText("https://i.pinimg.com/236x/32/26/3c/32263c697d9f55a81aa60f77aebc1165.jpg")
+
+        ImageEditor("#editImageWrapper")
+
     })
 })
 

@@ -1,12 +1,15 @@
 window.addEventListener('load', () => {
     var extBtn = document.querySelector("#extensionBtnId")
-    var clockEle = document.querySelector('#clockId')
-    timerFunc(clockEle)
-
+    var clipBtn = document.querySelector('#clipBtnId')
     extBtn.addEventListener('click', (e) => {
         console.log("extension click-1")
         //iframe to parent
         window.top.postMessage({ cmd: "FROM_WIDGET_GET_SHOOT_IMAGES" }, "*")
+    })
+
+    clipBtn.addEventListener('click', (e) => {
+        console.log("Clip")
+        navigator.clipboard.writeText("https://i.pinimg.com/236x/32/26/3c/32263c697d9f55a81aa60f77aebc1165.jpg")
     })
 })
 

@@ -44,10 +44,20 @@
     background-color:rgb(209, 247, 184);
     overflow:hidden;
 }
-
-.edit-wrapper img{
-    width:50%
+.img-editor-area{
+    position:relative;
+    width:98%;
+    height:96%;
+    overflow:hidden;
+    background:lightcoral;
+    z-index:2;
 }
+
+#imgId{
+    position:absolute;
+    
+}
+
 /* clip-btn-style */
 .clip-btn-style{
     position:fixed;
@@ -60,6 +70,7 @@
     padding:5px;
     box-shadow: 0px 0px 10px rgb(160, 90, 78);
     transition: all 0.2s ease-out;
+    z-index:100;
 }
 
 .clip-btn-style:hover{

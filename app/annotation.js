@@ -3,7 +3,7 @@ const ImageEditor = (id = null) => {
     var wrapper = document.querySelector(id)
     var svgWrapper = document.querySelector('#editSvgWrapper')
 
-    // updateImgSrc(DEFAULT_IMG_SRC)
+    updateImgSrc(DEFAULT_IMG_SRC)
 
     //create annotationBox
     createAnnoContainer().then(({ edit, anchor, line }) => {
@@ -40,6 +40,40 @@ const ImageEditor = (id = null) => {
 const updateImgSrc = (src = "") => {
     var imgEle = document.querySelector('#imgId')
     imgEle.src = src
+    imgEle.style.userSelect = 'none'
+    var info = {
+        moveFlag: false,
+        offsetLeft: 0,
+        offsetTop: 0
+    }
+
+    //event listener
+    imgEle.addEventListener('mousedown', (e) => {
+        info.moveFlag = true
+        info.offsetLeft = imgEle.offsetLeft - e.clientX
+        info.offsetTop = imgEle.offsetTop - e.clientY
+    })
+    document.addEventListener('mouseup', (e) => {
+        info.moveFlag = false
+    })
+    document.addEventListener('mousemove', (e) => {
+        if (info.moveFlag) {
+            let mx = e.clientX
+            let my = e.clientY
+            const wrapperLeft = mx + info.offsetLeft
+            const wrapperTop = my + info.offsetTop
+            imgEle.style.left = wrapperLeft + 'px'
+            imgEle.style.top = wrapperTop + 'px'
+        }
+    })
+    imgEle.addEventListener('wheel', function (e) {
+        var w = this.width + Math.floor(e.deltaY);
+        if (w > 0)
+            this.width = w;
+        e.preventDefault();
+    });
+    //disable drag hover
+    imgEle.addEventListener('dragstart', (e) => { e.preventDefault() })
 }
 
 const createAnnoContainer = (id = "") => {
@@ -161,10 +195,12 @@ createAnchor = () => {
     anchor.style.position = 'absolute'
     anchor.style.left = "0px"
     anchor.style.top = "0px"
-    anchor.style.width = "16px"
-    anchor.style.height = "16px"
+    anchor.style.width = "20px"
+    anchor.style.height = "20px"
     anchor.style.borderRadius = "50%"
-    anchor.style.backgroundColor = "rgba(0,255,2,1)"
+    anchor.style.backgroundColor = "rgba(0,255,2,0.4)"
+    anchor.style.backdropFilter = "blur(3px)"
+    anchor.style.zIndex = 5
 
     return anchor
 }

@@ -3,42 +3,30 @@ const ImageEditor = (id = null) => {
     var wrapper = document.querySelector(id)
     var svgWrapper = document.querySelector('#editSvgWrapper')
 
-    updateImgSrc(DEFAULT_IMG_SRC)
+    // updateImgSrc(DEFAULT_IMG_SRC)
 
     //create annotationBox
     createAnnoContainer().then(({ edit, anchor, line }) => {
         wrapper.appendChild(edit)
         wrapper.appendChild(anchor)
         svgWrapper.appendChild(line)
+        //download
+        html2canvas(wrapper, {
+            logging: true, letterRendering: 1, allowTaint: false, useCORS: true
+        }).then(canvas => {
+            var link = document.createElement('a');
+            link.download = 'filename.png';
+            link.href = canvas.toDataURL('image/jpeg')
+            link.click();
+            // console.log(canvas.toDataURL('image/jpeg'))
+        });
     })
-
-    //create circle[canvas]
-    // var cv = document.querySelector('#canvas')
-    // context = cv.getContext('2d')
-
-    //image to canvas
-    var base_img = new Image()
-    base_img.src = DEFAULT_IMG_SRC
-    base_img.onload = () => {
-        //draw at ori_x, ori_y
-        // context.drawImage(base_img, 100, 50)
-
-        // console.log(cv.toDataURL())
-    }
-
-    //download
-    // html2canvas(wrapper, {
-    //     logging: true, letterRendering: 1, allowTaint: false, useCORS: true
-    // }).then(canvas => {
-    //     var link = document.createElement('a');
-    //     link.download = 'filename.png';
-    //     link.href = canvas.toDataURL('image/jpeg')
-    //     link.click();
-    // });
 }
 
 const updateImgSrc = (src = "") => {
     var imgEle = document.querySelector('#imgId')
+    var registerFlag = (imgEle.getAttribute('src') == "") ? true : false
+
     imgEle.src = src
     imgEle.style.userSelect = 'none'
     var info = {
@@ -46,6 +34,9 @@ const updateImgSrc = (src = "") => {
         offsetLeft: 0,
         offsetTop: 0
     }
+
+    if (registerFlag == false)
+        return
 
     //event listener
     imgEle.addEventListener('mousedown', (e) => {
@@ -203,4 +194,9 @@ createAnchor = () => {
     anchor.style.zIndex = 5
 
     return anchor
+}
+
+const AnnoInst = {
+    imageEditor: ImageEditor,
+    updateImgSrc: updateImgSrc
 }

@@ -45,6 +45,9 @@ const updateImgSrc = (src = "") => {
 
     if (registerFlag == false)
         return
+    //setting wrapper width and height
+    imgWrapper.style.width = imgEle.getBoundingClientRect().width + 'px'
+    imgWrapper.style.height = imgEle.getBoundingClientRect().height + 'px'
 
     //event listener
     imgWrapper.addEventListener('mousedown', (e) => {
@@ -87,21 +90,27 @@ const updateImgSrc = (src = "") => {
         }
     })
     imgWrapper.addEventListener('wheel', function (e) {
-        let mx = e.clientX
-        let my = e.clientY
-        var preHeight = this.getBoundingClientRect().height
-        var preWidth = this.getBoundingClientRect().width
+        var preHeight = imgWrapper.getBoundingClientRect().height
+        var preWidth = imgWrapper.getBoundingClientRect().width
+        var ratio = preHeight / preWidth
+
+        //fix height to width ratio
         var w = preWidth + Math.floor(e.deltaY);
-        if (w > 0) {
+        var h = ratio * w;
+
+        if (w > 10 && h > 10) {
             this.style.width = `${w}px`;
+            this.style.height = `${h}px`;
 
             //after scale image, shift 
-            const wrapperTop = this.offsetTop + (preHeight - this.getBoundingClientRect().height) / 2
+            const wrapperTop = this.offsetTop + (preHeight - h) / 2
             const wrapperLeft = this.offsetLeft + (preWidth - w) / 2
-            console.log(this.offsetTop, wrapperTop, preHeight, this.getBoundingClientRect().height)
-            // console.log(preWidth, this.getBoundingClientRect().width)
             imgWrapper.style.top = wrapperTop + 'px'
             imgWrapper.style.left = wrapperLeft + 'px'
+
+            //fix relative imgEle position
+            imgEle.style.top = `${imgEle.offsetTop * (h / preHeight)}px`
+            imgEle.style.left = `${imgEle.offsetLeft * (w / preWidth)}px`
         }
 
         e.preventDefault();

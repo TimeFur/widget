@@ -92,10 +92,13 @@ const updateImgSrc = (src = "") => {
             const imgWrapperTop = my + info.offsetTop
             var imgWrapperHeight = info.cropInfo.imgWrapper.bottom - my - info.clickShiftTop
             const imgEleTop = imgWrapperHeight - info.cropInfo.imgEle.height
+                + (info.cropInfo.imgEle.bottom - info.cropInfo.imgWrapper.bottom)
 
             const imgWrapperLeft = mx + info.offsetLeft
             var imgWrapperWidth = info.cropInfo.imgWrapper.right - mx - info.clickShiftLeft
             const imgEleLeft = imgWrapperWidth - info.cropInfo.imgEle.width
+                + (info.cropInfo.imgEle.width - info.cropInfo.imgWrapper.width)
+
             //avoid over img range
             if (cropTopFlag && imgEleTop > 0)
                 return
@@ -114,21 +117,19 @@ const updateImgSrc = (src = "") => {
             }
             if (cropRightFlag) {
                 imgWrapperWidth = mx - info.cropInfo.imgWrapper.left + info.clickShiftRight
-                if (imgWrapperWidth > info.cropInfo.imgEle.width)
-                    imgWrapperWidth = info.cropInfo.imgEle.width
+                if (imgWrapperWidth + info.cropInfo.imgWrapper.left > info.cropInfo.imgEle.right)
+                    imgWrapperWidth = info.cropInfo.imgEle.right - info.cropInfo.imgWrapper.left
                 imgWrapper.style.width = `${imgWrapperWidth}px`
             }
             if (cropBottomFlag) {
                 imgWrapperHeight = my - info.cropInfo.imgWrapper.top + info.clickShiftBottom
-                if (imgWrapperHeight > info.cropInfo.imgEle.height)
-                    imgWrapperHeight = info.cropInfo.imgEle.height
+                if (imgWrapperHeight + info.cropInfo.imgWrapper.top > info.cropInfo.imgEle.bottom)
+                    imgWrapperHeight = info.cropInfo.imgEle.bottom - info.cropInfo.imgWrapper.top
                 imgWrapper.style.height = `${imgWrapperHeight}px`
             }
-
             imgEle.style.width = `${info.cropInfo.imgEle.width}px`
             imgEle.style.height = `${info.cropInfo.imgEle.height}px`
         } else if (info.moveFlag) {
-
             const wrapperLeft = mx + info.offsetLeft
             const wrapperTop = my + info.offsetTop
             imgWrapper.style.left = wrapperLeft + 'px'

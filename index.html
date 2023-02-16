@@ -18,9 +18,15 @@
             </div>
             <hr style="height:96%" size="100%" width="4px">
             <div id="editImageWrapper" , class="edit-wrapper">
-                <svg style="position:absolute; z-index:1;" id="editSvgWrapper" height="100%" width="100%"> </svg>
+                <svg style="position:absolute; z-index:0;" id="editSvgWrapper" height="100%" width="100%"> </svg>
                 <div id="imgEditorArea" class="img-editor-area">
-                    <img id="imgId" src="" alt="">
+                    <div id="imgWrapperId" class="img-wrapper">
+                        <img id="imgId" src="" alt="">
+                        <div class="img-crop-top"></div>
+                        <div class="img-crop-bottom"></div>
+                        <div class="img-crop-left"></div>
+                        <div class="img-crop-right"></div>
+                    </div>
                 </div>
             </div>
             <div id="clipBtnId" class="clip-btn-style">Clip</div>

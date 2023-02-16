@@ -11,20 +11,22 @@ const ImageEditor = (id = null) => {
         wrapper.appendChild(anchor)
         svgWrapper.appendChild(line)
         //download
-        html2canvas(wrapper, {
-            logging: true, letterRendering: 1, allowTaint: false, useCORS: true
-        }).then(canvas => {
-            var link = document.createElement('a');
-            link.download = 'filename.png';
-            link.href = canvas.toDataURL('image/jpeg')
-            link.click();
-            // console.log(canvas.toDataURL('image/jpeg'))
-        });
+        // html2canvas(wrapper, {
+        //     logging: true, letterRendering: 1, allowTaint: false, useCORS: true
+        // }).then(canvas => {
+        //     var link = document.createElement('a');
+        //     link.download = 'filename.png';
+        //     link.href = canvas.toDataURL('image/jpeg')
+        //     link.click();
+        //     // console.log(canvas.toDataURL('image/jpeg'))
+        // });
     })
 }
 
 const updateImgSrc = (src = "") => {
+    var imgWrapper = document.querySelector('#imgWrapperId')
     var imgEle = document.querySelector('#imgId')
+    var cropTop = document.querySelector('.img-crop-top')
     var registerFlag = (imgEle.getAttribute('src') == "") ? true : false
 
     imgEle.src = src
@@ -32,39 +34,90 @@ const updateImgSrc = (src = "") => {
     var info = {
         moveFlag: false,
         offsetLeft: 0,
-        offsetTop: 0
+        offsetTop: 0,
+        cropTopFlag: false,
+        cropLeftFlag: false,
+        cropInfo: {
+            imgWrapper: {},
+            imgEle: {}
+        }
     }
 
     if (registerFlag == false)
         return
 
     //event listener
-    imgEle.addEventListener('mousedown', (e) => {
+    imgWrapper.addEventListener('mousedown', (e) => {
         info.moveFlag = true
-        info.offsetLeft = imgEle.offsetLeft - e.clientX
-        info.offsetTop = imgEle.offsetTop - e.clientY
+        info.offsetLeft = imgWrapper.offsetLeft - e.clientX
+        info.offsetTop = imgWrapper.offsetTop - e.clientY
     })
     document.addEventListener('mouseup', (e) => {
-        info.moveFlag = false
+        info.moveFlag = false;
+        info.cropTopFlag = false;
     })
     document.addEventListener('mousemove', (e) => {
-        if (info.moveFlag) {
-            let mx = e.clientX
-            let my = e.clientY
+        let mx = e.clientX
+        let my = e.clientY
+
+        if (info.cropTopFlag) {
+            console.log("Crop top:", mx, my)
+            const imgEleLeft = imgEle.offsetLeft
+
+            const imgWrapperHeight = info.cropInfo.imgWrapper.bottom - my
+            const imgWrapperTop = my
+            const imgEleTop = (info.cropInfo.imgWrapper.bottom - imgWrapperTop) - info.cropInfo.imgEle.height
+            console.log(imgEleTop, info.cropInfo.imgWrapper.bottom, info.cropInfo.imgEle.height)
+            if (imgEleTop > 0)
+                return
+
+            // imgWrapper.style.left = wrapperLeft + 'px'
+            imgWrapper.style.top = imgWrapperTop + 'px'
+            imgWrapper.style.height = `${imgWrapperHeight}px`
+
+            console.log(info.cropInfo.imgWrapper.height)
+            imgEle.style.top = `${imgEleTop}px`
+
+        } else if (info.moveFlag) {
+
             const wrapperLeft = mx + info.offsetLeft
             const wrapperTop = my + info.offsetTop
-            imgEle.style.left = wrapperLeft + 'px'
-            imgEle.style.top = wrapperTop + 'px'
+            imgWrapper.style.left = wrapperLeft + 'px'
+            imgWrapper.style.top = wrapperTop + 'px'
         }
     })
-    imgEle.addEventListener('wheel', function (e) {
-        var w = this.width + Math.floor(e.deltaY);
-        if (w > 0)
-            this.width = w;
+    imgWrapper.addEventListener('wheel', function (e) {
+        let mx = e.clientX
+        let my = e.clientY
+        var preHeight = this.getBoundingClientRect().height
+        var preWidth = this.getBoundingClientRect().width
+        var w = preWidth + Math.floor(e.deltaY);
+        if (w > 0) {
+            this.style.width = `${w}px`;
+
+            //after scale image, shift 
+            const wrapperTop = this.offsetTop + (preHeight - this.getBoundingClientRect().height) / 2
+            const wrapperLeft = this.offsetLeft + (preWidth - w) / 2
+            console.log(this.offsetTop, wrapperTop, preHeight, this.getBoundingClientRect().height)
+            // console.log(preWidth, this.getBoundingClientRect().width)
+            imgWrapper.style.top = wrapperTop + 'px'
+            imgWrapper.style.left = wrapperLeft + 'px'
+        }
+
         e.preventDefault();
     });
+
+    //crop event
+    cropTop.addEventListener('mousedown', (e) => {
+        info.cropTopFlag = true
+        info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
+        info.cropInfo.imgEle = imgEle.getBoundingClientRect()
+        info.offsetLeft = imgWrapper.offsetLeft - e.clientX
+        info.offsetTop = imgWrapper.offsetTop - e.clientY
+    })
+
     //disable drag hover
-    imgEle.addEventListener('dragstart', (e) => { e.preventDefault() })
+    imgWrapper.addEventListener('dragstart', (e) => { e.preventDefault() })
 }
 
 const createAnnoContainer = (id = "") => {
@@ -89,6 +142,8 @@ const createAnnoContainer = (id = "") => {
             annoInfo.offsetLeft = edit.offsetLeft - e.clientX
             annoInfo.offsetTop = edit.offsetTop - e.clientY
 
+            if (line.parentNode)
+                line.parentNode.style.zIndex = 1
         })
         anchor.addEventListener('mousedown', (e) => {
             annoInfo.anchorMoveFlag = true
@@ -97,7 +152,8 @@ const createAnnoContainer = (id = "") => {
             //disable edit editable
             edit.children[0].setAttribute('contenteditable', false)
             edit.children[1].setAttribute('contenteditable', false)
-
+            if (line.parentNode)
+                line.parentNode.style.zIndex = 1
         })
         document.addEventListener('mouseup', (e) => {
             annoInfo.editMoveFlag = false
@@ -105,6 +161,9 @@ const createAnnoContainer = (id = "") => {
 
             edit.children[0].setAttribute('contenteditable', true)
             edit.children[1].setAttribute('contenteditable', true)
+
+            if (line.parentNode)
+                line.parentNode.style.zIndex = 0
         })
         document.addEventListener('mousemove', (e) => {
             let mx = e.clientX

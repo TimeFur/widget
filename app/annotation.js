@@ -24,9 +24,13 @@ const ImageEditor = (id = null) => {
 }
 
 const updateImgSrc = (src = "") => {
+    const imgEditPanel = document.querySelector('#imgEditorArea')
     var imgWrapper = document.querySelector('#imgWrapperId')
     var imgEle = document.querySelector('#imgId')
     var cropTop = document.querySelector('.img-crop-top')
+    var cropLeft = document.querySelector('.img-crop-left')
+    var cropBottom = document.querySelector('.img-crop-bottom')
+    var cropRight = document.querySelector('.img-crop-right')
     var registerFlag = (imgEle.getAttribute('src') == "") ? true : false
 
     imgEle.src = src
@@ -35,9 +39,15 @@ const updateImgSrc = (src = "") => {
         moveFlag: false,
         offsetLeft: 0,
         offsetTop: 0,
-        cropTopFlag: false,
-        cropLeftFlag: false,
+        clickShiftLeft: 0,
+        clickShiftTop: 0,
+        clickShiftRight: 0,
+        clickShiftBottom: 0,
         cropInfo: {
+            cropTopFlag: false,
+            cropLeftFlag: false,
+            cropBottomFlag: false,
+            cropRightFlag: false,
             imgWrapper: {},
             imgEle: {}
         }
@@ -48,39 +58,75 @@ const updateImgSrc = (src = "") => {
     //setting wrapper width and height
     imgWrapper.style.width = imgEle.getBoundingClientRect().width + 'px'
     imgWrapper.style.height = imgEle.getBoundingClientRect().height + 'px'
+    imgEle.style.width = imgEle.getBoundingClientRect().width + 'px'
+    imgEle.style.height = imgEle.getBoundingClientRect().height + 'px'
+    // imgEle.style.left = 0 + 'px'
+    // imgEle.style.top = 0 + 'px'
 
     //event listener
     imgWrapper.addEventListener('mousedown', (e) => {
         info.moveFlag = true
         info.offsetLeft = imgWrapper.offsetLeft - e.clientX
         info.offsetTop = imgWrapper.offsetTop - e.clientY
+        info.clickShiftLeft = imgWrapper.getBoundingClientRect().left - e.clientX
+        info.clickShiftTop = imgWrapper.getBoundingClientRect().top - e.clientY
+        info.clickShiftRight = imgWrapper.getBoundingClientRect().right - e.clientX
+        info.clickShiftBottom = imgWrapper.getBoundingClientRect().bottom - e.clientY
+
+        console.log(info.offsetLeft, info.offsetTop)
     })
     document.addEventListener('mouseup', (e) => {
         info.moveFlag = false;
-        info.cropTopFlag = false;
+        info.cropInfo.cropTopFlag = false;
+        info.cropInfo.cropLeftFlag = false;
+        info.cropInfo.cropBottomFlag = false;
+        info.cropInfo.cropRightFlag = false;
     })
     document.addEventListener('mousemove', (e) => {
         let mx = e.clientX
         let my = e.clientY
+        const { cropTopFlag, cropLeftFlag, cropRightFlag, cropBottomFlag } = info.cropInfo
+        if (cropTopFlag || cropLeftFlag || cropRightFlag || cropBottomFlag) {
 
-        if (info.cropTopFlag) {
-            console.log("Crop top:", mx, my)
-            const imgEleLeft = imgEle.offsetLeft
+            //crop align vertical
+            const imgWrapperTop = my + info.offsetTop
+            var imgWrapperHeight = info.cropInfo.imgWrapper.bottom - my - info.clickShiftTop
+            const imgEleTop = imgWrapperHeight - info.cropInfo.imgEle.height
 
-            const imgWrapperHeight = info.cropInfo.imgWrapper.bottom - my
-            const imgWrapperTop = my
-            const imgEleTop = (info.cropInfo.imgWrapper.bottom - imgWrapperTop) - info.cropInfo.imgEle.height
-            console.log(imgEleTop, info.cropInfo.imgWrapper.bottom, info.cropInfo.imgEle.height)
-            if (imgEleTop > 0)
+            const imgWrapperLeft = mx + info.offsetLeft
+            var imgWrapperWidth = info.cropInfo.imgWrapper.right - mx - info.clickShiftLeft
+            const imgEleLeft = imgWrapperWidth - info.cropInfo.imgEle.width
+            //avoid over img range
+            if (cropTopFlag && imgEleTop > 0)
+                return
+            if (cropLeftFlag && imgEleLeft > 0)
                 return
 
-            // imgWrapper.style.left = wrapperLeft + 'px'
-            imgWrapper.style.top = imgWrapperTop + 'px'
-            imgWrapper.style.height = `${imgWrapperHeight}px`
+            if (cropTopFlag) {
+                imgWrapper.style.top = imgWrapperTop + 'px'
+                imgWrapper.style.height = `${imgWrapperHeight}px`
+                imgEle.style.top = `${imgEleTop}px`
+            }
+            if (cropLeftFlag) {
+                imgWrapper.style.left = imgWrapperLeft + 'px'
+                imgWrapper.style.width = `${imgWrapperWidth}px`
+                imgEle.style.left = `${imgEleLeft}px`
+            }
+            if (cropRightFlag) {
+                imgWrapperWidth = mx - info.cropInfo.imgWrapper.left + info.clickShiftRight
+                if (imgWrapperWidth > info.cropInfo.imgEle.width)
+                    imgWrapperWidth = info.cropInfo.imgEle.width
+                imgWrapper.style.width = `${imgWrapperWidth}px`
+            }
+            if (cropBottomFlag) {
+                imgWrapperHeight = my - info.cropInfo.imgWrapper.top + info.clickShiftBottom
+                if (imgWrapperHeight > info.cropInfo.imgEle.height)
+                    imgWrapperHeight = info.cropInfo.imgEle.height
+                imgWrapper.style.height = `${imgWrapperHeight}px`
+            }
 
-            console.log(info.cropInfo.imgWrapper.height)
-            imgEle.style.top = `${imgEleTop}px`
-
+            imgEle.style.width = `${info.cropInfo.imgEle.width}px`
+            imgEle.style.height = `${info.cropInfo.imgEle.height}px`
         } else if (info.moveFlag) {
 
             const wrapperLeft = mx + info.offsetLeft
@@ -111,18 +157,36 @@ const updateImgSrc = (src = "") => {
             //fix relative imgEle position
             imgEle.style.top = `${imgEle.offsetTop * (h / preHeight)}px`
             imgEle.style.left = `${imgEle.offsetLeft * (w / preWidth)}px`
+            imgEle.style.width = `${imgEle.getBoundingClientRect().width * (w / preWidth)}px`
+            imgEle.style.height = `${imgEle.getBoundingClientRect().height * (h / preHeight)}px`
         }
 
+        //avoid background page scroll
         e.preventDefault();
     });
 
     //crop event
     cropTop.addEventListener('mousedown', (e) => {
-        info.cropTopFlag = true
+        info.cropInfo.cropTopFlag = true
         info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
         info.cropInfo.imgEle = imgEle.getBoundingClientRect()
-        info.offsetLeft = imgWrapper.offsetLeft - e.clientX
-        info.offsetTop = imgWrapper.offsetTop - e.clientY
+    })
+    cropLeft.addEventListener('mousedown', (e) => {
+        info.cropInfo.cropLeftFlag = true
+        info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
+        info.cropInfo.imgEle = imgEle.getBoundingClientRect()
+
+        console.log("Crop ledt click:", info.cropInfo.imgWrapper, info.cropInfo.imgEle)
+    })
+    cropBottom.addEventListener('mousedown', (e) => {
+        info.cropInfo.cropBottomFlag = true
+        info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
+        info.cropInfo.imgEle = imgEle.getBoundingClientRect()
+    })
+    cropRight.addEventListener('mousedown', (e) => {
+        info.cropInfo.cropRightFlag = true
+        info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
+        info.cropInfo.imgEle = imgEle.getBoundingClientRect()
     })
 
     //disable drag hover

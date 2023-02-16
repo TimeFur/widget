@@ -64,16 +64,46 @@
     width:100%;
     height:100%;
     overflow:hidden;
-
+    border-radius: 8px;
     background-color:white;
 }
 
 .img-crop-top{
-    position:relative;
-    top:0px;
+    position:absolute;
+    top:1%;
     left:49%;
     width:20px;
     height:6px;
+    border-radius:1rem;
+    background-color:white;
+}
+
+.img-crop-left{
+    position:absolute;
+    top:50%;
+    left:1%;
+    width:6px;
+    height:20px;
+    border-radius:1rem;
+    background-color:white;
+}
+
+.img-crop-bottom{
+    position:absolute;
+    bottom:3px;
+    left:50%;
+    width:20px;
+    height:6px;
+    border-radius:1rem;
+    background-color:white;
+}
+
+.img-crop-right{
+    position:absolute;
+    top:50%;
+    right:3px;
+    width:6px;
+    height:20px;
     border-radius:1rem;
     background-color:white;
 }

@@ -4,27 +4,33 @@ const ImageEditor = (id = null) => {
     var svgWrapper = document.querySelector('#editSvgWrapper')
 
     // updateImgSrc(DEFAULT_IMG_SRC)
+}
 
-    //create annotationBox
+const clipFunc = () => {
+    var wrapper = document.querySelector('#editImageWrapper')
+    //download
+    html2canvas(wrapper, {
+        logging: true, letterRendering: 1, allowTaint: false, useCORS: true
+    }).then(canvas => {
+        var link = document.createElement('a');
+        link.download = 'filename.png';
+        link.href = canvas.toDataURL('image/jpeg')
+        link.click();
+        // console.log(canvas.toDataURL('image/jpeg'))
+    });
+}
+
+const createAnnotation = () => {
+    var wrapper = document.querySelector('#editImageWrapper')
+    var svgWrapper = document.querySelector('#editSvgWrapper')
     createAnnoContainer().then(({ edit, anchor, line }) => {
         wrapper.appendChild(edit)
         wrapper.appendChild(anchor)
         svgWrapper.appendChild(line)
-        //download
-        // html2canvas(wrapper, {
-        //     logging: true, letterRendering: 1, allowTaint: false, useCORS: true
-        // }).then(canvas => {
-        //     var link = document.createElement('a');
-        //     link.download = 'filename.png';
-        //     link.href = canvas.toDataURL('image/jpeg')
-        //     link.click();
-        //     // console.log(canvas.toDataURL('image/jpeg'))
-        // });
     })
 }
 
 const updateImgSrc = (src = "") => {
-    const imgEditPanel = document.querySelector('#imgEditorArea')
     var imgWrapper = document.querySelector('#imgWrapperId')
     var imgEle = document.querySelector('#imgId')
     var cropTop = document.querySelector('.img-crop-top')
@@ -60,10 +66,20 @@ const updateImgSrc = (src = "") => {
     imgWrapper.style.height = imgEle.getBoundingClientRect().height + 'px'
     imgEle.style.width = imgEle.getBoundingClientRect().width + 'px'
     imgEle.style.height = imgEle.getBoundingClientRect().height + 'px'
-    // imgEle.style.left = 0 + 'px'
-    // imgEle.style.top = 0 + 'px'
 
     //event listener
+    imgWrapper.addEventListener('mouseenter', (e) => {
+        var eleList = document.querySelectorAll('.crop-anchor-style')
+        eleList.forEach(ele => {
+            ele.style.opacity = '100%'
+        })
+    })
+    imgWrapper.addEventListener('mouseleave', (e) => {
+        var eleList = document.querySelectorAll('.crop-anchor-style')
+        eleList.forEach(ele => {
+            ele.style.opacity = '0'
+        })
+    })
     imgWrapper.addEventListener('mousedown', (e) => {
         info.moveFlag = true
         info.offsetLeft = imgWrapper.offsetLeft - e.clientX
@@ -72,8 +88,6 @@ const updateImgSrc = (src = "") => {
         info.clickShiftTop = imgWrapper.getBoundingClientRect().top - e.clientY
         info.clickShiftRight = imgWrapper.getBoundingClientRect().right - e.clientX
         info.clickShiftBottom = imgWrapper.getBoundingClientRect().bottom - e.clientY
-
-        console.log(info.offsetLeft, info.offsetTop)
     })
     document.addEventListener('mouseup', (e) => {
         info.moveFlag = false;
@@ -176,8 +190,6 @@ const updateImgSrc = (src = "") => {
         info.cropInfo.cropLeftFlag = true
         info.cropInfo.imgWrapper = imgWrapper.getBoundingClientRect()
         info.cropInfo.imgEle = imgEle.getBoundingClientRect()
-
-        console.log("Crop ledt click:", info.cropInfo.imgWrapper, info.cropInfo.imgEle)
     })
     cropBottom.addEventListener('mousedown', (e) => {
         info.cropInfo.cropBottomFlag = true
@@ -331,5 +343,7 @@ createAnchor = () => {
 
 const AnnoInst = {
     imageEditor: ImageEditor,
-    updateImgSrc: updateImgSrc
+    updateImgSrc: updateImgSrc,
+    createAnnotation: createAnnotation,
+    clipFunc: clipFunc
 }

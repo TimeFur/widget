@@ -65,25 +65,20 @@
     height:100%;
     overflow:hidden;
     border-radius: 8px;
-    background-color:white;
+    /* background-color:white; */
 }
 
+.crop-anchor-style{
+    opacity: 0;
+    box-shadow: 2px 2px 0px rgb(44, 3, 3);
+    transition:all 1s ease-out;
+}
 .img-crop-top{
     position:absolute;
     top:1%;
     left:49%;
     width:20px;
     height:6px;
-    border-radius:1rem;
-    background-color:white;
-}
-
-.img-crop-left{
-    position:absolute;
-    top:50%;
-    left:1%;
-    width:6px;
-    height:20px;
     border-radius:1rem;
     background-color:white;
 }
@@ -97,6 +92,19 @@
     border-radius:1rem;
     background-color:white;
 }
+.img-crop-bottom:hover,.img-crop-top:hover{
+    cursor:ns-resize;
+}
+
+.img-crop-left{
+    position:absolute;
+    top:50%;
+    left:1%;
+    width:6px;
+    height:20px;
+    border-radius:1rem;
+    background-color:white;
+}
 
 .img-crop-right{
     position:absolute;
@@ -107,11 +115,12 @@
     border-radius:1rem;
     background-color:white;
 }
+.img-crop-left:hover,.img-crop-right:hover{
+    cursor:ew-resize;
+}
 /* clip-btn-style */
-.clip-btn-style{
+.clip-btn-style,.anno-btn-style{
     position:fixed;
-    right:2rem;
-    bottom:2rem;
 
     cursor:pointer;
     background-color:bisque;
@@ -122,8 +131,17 @@
     z-index:100;
 }
 
+.clip-btn-style{
+    right:2rem;
+    bottom:2rem;
+}
 .clip-btn-style:hover{
     background-color:rgb(248, 167, 68);
+}
+
+.anno-btn-style{
+    left:25%;
+    bottom:2rem;
 }
 /* Extension style */
 .notify-btn{

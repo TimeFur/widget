@@ -111,7 +111,7 @@ const updateImgSrc = (src = "") => {
             const imgWrapperLeft = mx + info.offsetLeft
             var imgWrapperWidth = info.cropInfo.imgWrapper.right - mx - info.clickShiftLeft
             const imgEleLeft = imgWrapperWidth - info.cropInfo.imgEle.width
-                + (info.cropInfo.imgEle.width - info.cropInfo.imgWrapper.width)
+                + (info.cropInfo.imgEle.right - info.cropInfo.imgWrapper.right)
 
             //avoid over img range
             if (cropTopFlag && imgEleTop > 0)

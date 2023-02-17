@@ -160,7 +160,7 @@
     height:auto;
     border-radius:10px;
 }
-
+/* Delete style */
 .img-del-btn{
     position:absolute;
     top:2%;
@@ -174,4 +174,21 @@
     background-size: 100% 100%;
 
     transition: all 1s ease;
+}
+
+.anno-del-btn{
+    position:absolute;
+    top:-1rem;
+    right: -1rem;
+    width: 1rem;
+    height: 1rem;
+    cursor: pointer;
+    /* opacity: 0; */
+    background-image:url('./img/delete-icon-hover.png');
+    background-position: center center;
+    background-size: 100% 100%;
+    background-color: rgb(100, 43, 43);
+    border-radius: 1rem;
+
+    transition: all 0.5s ease;
 }

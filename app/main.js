@@ -52,6 +52,11 @@ const getExtensionResponse = (cmd, imgSrc, tabId) => {
     }
 }
 
+/***************************************************************
+ *                      Create new image
+ * - append into imgListId to show what can be edit
+ * - create event listener to create img into edit platform
+ ***************************************************************/
 const insertImgToList = (imgSrc) => {
     var listWrapper = document.querySelector("#imgListId")
 
@@ -61,8 +66,10 @@ const insertImgToList = (imgSrc) => {
     imgEle.className = "ext-img-style"
 
     imgEle.addEventListener('click', (e) => {
-        console.log("click")
-        AnnoInst.updateImgSrc(imgSrc)
+        // AnnoInst.updateImgSrc(imgSrc)
+        const editPlatform = document.querySelector('#imgEditorArea')
+        var imgWrapper = imgEditInst.createImageWrapper(imgSrc)
+        editPlatform.appendChild(imgWrapper)
     })
 
     listWrapper.appendChild(imgEle)

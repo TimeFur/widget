@@ -8,15 +8,27 @@ const ImageEditor = (id = null) => {
 
 const clipFunc = () => {
     var wrapper = document.querySelector('#editImageWrapper')
+    var cvsWrapper = document.querySelector('#editSvgWrapper')
+
+    const wrapperStyle = wrapper.style
+
+    //presetting
+    wrapper.style.background = 'transparent'
+    cvsWrapper.style.zIndex = 100
+
     //download
     html2canvas(wrapper, {
-        logging: true, letterRendering: 1, allowTaint: false, useCORS: true
+        logging: true, letterRendering: 1, allowTaint: false, useCORS: true,
+        backgroundColor: null
     }).then(canvas => {
         var link = document.createElement('a');
+        var base64 = canvas.toDataURL('image/png')
         link.download = 'filename.png';
-        link.href = canvas.toDataURL('image/jpeg')
+        link.href = base64
         link.click();
-        // console.log(canvas.toDataURL('image/jpeg'))
+        // console.log(base64)
+        cvsWrapper.style.zIndex = 0
+        wrapper.style = wrapperStyle
     });
 }
 
@@ -184,8 +196,65 @@ const createAnchor = () => {
     return anchor
 }
 
+const registerImgEditWrapper = () => {
+    var wrapper = document.querySelector('#imgEditorArea')
+    var topCrop = document.querySelector('#wrapTopCrop')
+    var bottomCrop = document.querySelector('#wrapBottomCrop')
+    var leftCrop = document.querySelector('#wrapLeftCrop')
+    var rightCrop = document.querySelector('#wrapRightCrop')
+    var info = {
+        clientRect: {},
+        topEnable: false,
+        bottomEnable: false,
+        leftEnable: false,
+        rightEnable: false,
+        clickShiftLeft: 0,
+        clickShiftTop: 0,
+        clickShiftRight: 0,
+        clickShiftBottom: 0,
+        offsetTop: 0,
+        offsetLeft: 0
+    }
+
+    document.addEventListener('mousemove', (e) => {
+        var mx = e.clientX
+        var my = e.clientY
+        const imgWrapperTop = my + info.offsetTop
+        var imgWrapperHeight = info.clientRect.bottom - my - info.clickShiftTop
+        const imgWrapperLeft = mx + info.offsetLeft
+        var imgWrapperWidth = info.clientRect.right - mx - info.clickShiftLeft
+
+        if (info.topEnable) {
+            wrapper.style.top = imgWrapperTop + 'px'
+            wrapper.style.height = `${imgWrapperHeight}px`
+        }
+        if (info.leftEnable) {
+            wrapper.style.left = imgWrapperLeft + 'px'
+            wrapper.style.width = `${imgWrapperWidth}px`
+        }
+    })
+    document.addEventListener('mouseup', (e) => {
+        info.topEnable = false;
+        info.bottomEnable = false;
+        info.leftEnable = false;
+        info.rightEnable = false;
+    })
+    topCrop.addEventListener('mousedown', (e) => {
+        info.topEnable = true;
+        info.clientRect = wrapper.getBoundingClientRect()
+        info.clickShiftTop = wrapper.getBoundingClientRect().top - e.clientY
+        info.offsetTop = wrapper.offsetTop - e.clientY
+    })
+    leftCrop.addEventListener('mousedown', (e) => {
+        info.leftEnable = true;
+        info.clientRect = wrapper.getBoundingClientRect()
+        info.clickShiftLeft = wrapper.getBoundingClientRect().left - e.clientX
+        info.offsetLeft = wrapper.offsetLeft - e.clientX
+    })
+}
 const AnnoInst = {
     imageEditor: ImageEditor,
     createAnnotation: createAnnotation,
-    clipFunc: clipFunc
+    clipFunc: clipFunc,
+    registerImgEditWrapper: registerImgEditWrapper
 }

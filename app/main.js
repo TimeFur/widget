@@ -19,6 +19,8 @@ window.addEventListener('load', () => {
         console.log("Create anno")
         AnnoInst.createAnnotation()
     })
+
+    AnnoInst.registerImgEditWrapper()
 })
 
 window.addEventListener('message', (e) => {

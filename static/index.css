@@ -41,7 +41,8 @@
     position:relative;
     width:90%;
     height:100%;
-    background-color:rgb(209, 247, 184);
+    background:rgb(253, 196, 178);
+    /* background: transparent; */
     overflow:hidden;
 }
 .img-editor-area{
@@ -50,8 +51,10 @@
     left:1%;
     width:98%;
     height:96%;
+    border-radius: 0.5rem;
     overflow:hidden;
-    background:lightcoral;
+    outline:dotted 0.1rem;
+    background: transparent;
     z-index:0;
 }
 

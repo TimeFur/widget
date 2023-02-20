@@ -24,8 +24,8 @@ const createImageWrapper = (imgSrc = "") => {
     // imgWrapper.style.height = imgEle.getBoundingClientRect().height + 'px'
     // imgEle.style.width = imgEle.getBoundingClientRect().width + 'px'
     // imgEle.style.height = imgEle.getBoundingClientRect().height + 'px'
-    imgEle.style.width = '80%'
-    imgEle.style.height = 'auto'
+    // imgEle.style.width = '80%'
+    // imgEle.style.height = 'auto'
     imgWrapper.style.width = '80%'
     imgWrapper.style.height = '80%'
 
@@ -61,7 +61,7 @@ const createImageWrapper = (imgSrc = "") => {
         var ratio = preHeight / preWidth
 
         //fix height to width ratio
-        var w = preWidth + Math.floor(e.deltaY);
+        var w = preWidth + ((Math.floor(e.deltaY) < 0) ? -32 : 24);
         var h = ratio * w;
 
         if (w > 10 && h > 10) {
@@ -175,7 +175,7 @@ const createImageWrapper = (imgSrc = "") => {
     delBtn.addEventListener('click', (e) => {
         imgWrapper.remove()
     })
-    return imgWrapper
+    return { imgWrapper, imgEle }
 }
 
 /*--------------------------------------------------------

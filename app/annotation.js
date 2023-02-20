@@ -9,12 +9,15 @@ const ImageEditor = (id = null) => {
 const clipFunc = () => {
     var wrapper = document.querySelector('#editImageWrapper')
     var cvsWrapper = document.querySelector('#editSvgWrapper')
-
+    var topCrop = document.querySelector('#wrapTopCrop')
+    var leftCrop = document.querySelector('#wrapLeftCrop')
     const wrapperStyle = wrapper.style
 
     //presetting
     wrapper.style.background = 'transparent'
-    cvsWrapper.style.zIndex = 100
+    cvsWrapper.style.zIndex = 3
+    topCrop.style.opacity = 0
+    leftCrop.style.opacity = 0
 
     //download
     html2canvas(wrapper, {
@@ -29,17 +32,18 @@ const clipFunc = () => {
         // console.log(base64)
         cvsWrapper.style.zIndex = 0
         wrapper.style = wrapperStyle
+        topCrop.style.opacity = '100%'
+        leftCrop.style.opacity = '100%'
     });
 }
 
 const createAnnotation = () => {
-    var wrapper = document.querySelector('#editImageWrapper')
+    var wrapper = document.querySelector('#imgEditorArea')
     var svgWrapper = document.querySelector('#editSvgWrapper')
     createAnnoContainer().then(({ edit, anchor, line }) => {
         wrapper.appendChild(edit)
         wrapper.appendChild(anchor)
         svgWrapper.appendChild(line)
-
     })
 }
 
@@ -146,9 +150,13 @@ const createEditContainer = () => {
 
     editTitle.setAttribute('contenteditable', true)
     editTitle.textContent = "Title"
+    editTitle.style.fontSize = '1.2rem'
+    editTitle.style.outline = 'none'
 
     editContent.setAttribute('contenteditable', true)
     editContent.textContent = "Content"
+    editContent.style.fontSize = '0.8rem'
+    editContent.style.outline = 'none'
 
     editWrapper.appendChild(editTitle)
     editWrapper.appendChild(editContent)
@@ -157,15 +165,16 @@ const createEditContainer = () => {
     editWrapper.style.position = "absolute"
     editWrapper.style.left = "0px"
     editWrapper.style.top = "0px"
-    editWrapper.style.backgroundColor = "rgba(164,255,239,0.5)"
+    editWrapper.style.backgroundColor = "rgba(164,255,239)"
     editWrapper.style.width = "auto"
     editWrapper.style.height = "auto"
     editWrapper.style.borderRadius = "0.5rem"
-    editWrapper.style.padding = "3px"
+    editWrapper.style.padding = "6px"
     editWrapper.style.backdropFilter = "blur(3px)"
     editWrapper.style.fontSize = "1.2rem"
     editWrapper.style.zIndex = 5
     editWrapper.style.userSelect = 'none'
+    editWrapper.style.fontFamily = "monospace"
 
     return { edit: editWrapper, delBtn: delBtn }
 }
@@ -176,6 +185,8 @@ const createSvgLine = () => {
     line.setAttribute('x2', '2');
     line.setAttribute('y2', '2');
     line.setAttribute("stroke", "rgba(22,121,22,0.4)")
+    line.setAttribute("stroke-dasharray", "3.3")
+
     line.setAttribute("stroke-width", "2")
 
     return line
@@ -186,10 +197,10 @@ const createAnchor = () => {
     anchor.style.position = 'absolute'
     anchor.style.left = "0px"
     anchor.style.top = "0px"
-    anchor.style.width = "20px"
-    anchor.style.height = "20px"
+    anchor.style.width = "10px"
+    anchor.style.height = "10px"
     anchor.style.borderRadius = "50%"
-    anchor.style.backgroundColor = "rgba(0,255,2,0.4)"
+    anchor.style.backgroundColor = "rgba(0,255,2)"
     anchor.style.backdropFilter = "blur(3px)"
     anchor.style.zIndex = 5
 
@@ -199,11 +210,13 @@ const createAnchor = () => {
 const registerImgEditWrapper = () => {
     var wrapper = document.querySelector('#imgEditorArea')
     var topCrop = document.querySelector('#wrapTopCrop')
-    var bottomCrop = document.querySelector('#wrapBottomCrop')
     var leftCrop = document.querySelector('#wrapLeftCrop')
-    var rightCrop = document.querySelector('#wrapRightCrop')
     var info = {
-        clientRect: {},
+        clientRect: wrapper.getBoundingClientRect(),
+        wrapperOffsetTop: wrapper.offsetTop,
+        wrapperOffsetLeft: wrapper.offsetLeft,
+        heightRatio: wrapper.getBoundingClientRect().height / window.innerHeight,
+        widthRatio: wrapper.getBoundingClientRect().width / window.innerWidth,
         topEnable: false,
         bottomEnable: false,
         leftEnable: false,
@@ -220,15 +233,17 @@ const registerImgEditWrapper = () => {
         var mx = e.clientX
         var my = e.clientY
         const imgWrapperTop = my + info.offsetTop
-        var imgWrapperHeight = info.clientRect.bottom - my - info.clickShiftTop
-        const imgWrapperLeft = mx + info.offsetLeft
-        var imgWrapperWidth = info.clientRect.right - mx - info.clickShiftLeft
+        var imgWrapperHeight = info.clientRect.height + 2 * (info.wrapperOffsetTop - imgWrapperTop)
 
-        if (info.topEnable) {
+        const imgWrapperLeft = mx + info.offsetLeft
+        var imgWrapperWidth = info.clientRect.width + 2 * (info.wrapperOffsetLeft - imgWrapperLeft)
+
+        if (info.topEnable && imgWrapperHeight > 0) {
             wrapper.style.top = imgWrapperTop + 'px'
             wrapper.style.height = `${imgWrapperHeight}px`
+            console.log(imgWrapperHeight)
         }
-        if (info.leftEnable) {
+        if (info.leftEnable && imgWrapperWidth > 0) {
             wrapper.style.left = imgWrapperLeft + 'px'
             wrapper.style.width = `${imgWrapperWidth}px`
         }
@@ -241,15 +256,19 @@ const registerImgEditWrapper = () => {
     })
     topCrop.addEventListener('mousedown', (e) => {
         info.topEnable = true;
-        info.clientRect = wrapper.getBoundingClientRect()
         info.clickShiftTop = wrapper.getBoundingClientRect().top - e.clientY
         info.offsetTop = wrapper.offsetTop - e.clientY
     })
     leftCrop.addEventListener('mousedown', (e) => {
         info.leftEnable = true;
-        info.clientRect = wrapper.getBoundingClientRect()
         info.clickShiftLeft = wrapper.getBoundingClientRect().left - e.clientX
         info.offsetLeft = wrapper.offsetLeft - e.clientX
+    })
+
+    window.addEventListener('resize', (e) => {
+        console.log(e.target.innerHeight, e.target.innerWidth)
+        info.clientRect.width = e.target.innerWidth * info.widthRatio
+        info.clientRect.height = e.target.innerHeight * info.heightRatio
     })
 }
 const AnnoInst = {

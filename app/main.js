@@ -70,8 +70,14 @@ const insertImgToList = (imgSrc) => {
     imgEle.addEventListener('click', (e) => {
         // AnnoInst.updateImgSrc(imgSrc)
         const editPlatform = document.querySelector('#imgEditorArea')
-        var imgWrapper = imgEditInst.createImageWrapper(imgSrc)
+        var { imgWrapper, imgEle } = imgEditInst.createImageWrapper(imgSrc)
         editPlatform.appendChild(imgWrapper)
+
+        //set up style size
+        imgWrapper.style.width = `${imgEle.getBoundingClientRect().width}px`
+        imgWrapper.style.height = `${imgEle.getBoundingClientRect().height}px`
+        imgEle.style.width = `${imgEle.getBoundingClientRect().width}px`
+        imgEle.style.height = `${imgEle.getBoundingClientRect().height}px`
     })
 
     listWrapper.appendChild(imgEle)

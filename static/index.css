@@ -41,12 +41,12 @@
     position:relative;
     width:90%;
     height:100%;
-    background:rgb(253, 196, 178);
+    background:rgb(198, 194, 193);
     /* background: transparent; */
     overflow:hidden;
 }
 .img-editor-area{
-    position:relative;
+    position:absolute;
     top:2%;
     left:1%;
     width:98%;

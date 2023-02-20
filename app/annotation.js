@@ -19,16 +19,37 @@ const clipFunc = () => {
     topCrop.style.opacity = 0
     leftCrop.style.opacity = 0
 
+    const cropCanvas = (sourceCanvas, left, top, width, height) => {
+        let destCanvas = document.createElement('canvas');
+        destCanvas.width = width;
+        destCanvas.height = height;
+        destCanvas.getContext("2d").drawImage(
+            sourceCanvas,
+            left, top, width, height,  // source rect with content to crop
+            0, 0, width, height);      // newCanvas, same size as source rect
+        return destCanvas;
+    }
+
     //download
     html2canvas(wrapper, {
         logging: true, letterRendering: 1, allowTaint: false, useCORS: true,
         backgroundColor: null
     }).then(canvas => {
         var link = document.createElement('a');
-        var base64 = canvas.toDataURL('image/png')
+        var imgEditor = document.querySelector('#imgEditorArea');
+        // console.log(`top: ${imgEditor.offsetTop}px, left:${imgEditor.offsetLeft}px \nheight:${imgEditor.offsetHeight} width:${imgEditor.offsetWidth}`)
+        // console.log(`Wrap top: ${wrapper.offsetTop}px, left:${wrapper.offsetLeft}px \nheight:${wrapper.offsetHeight} width:${wrapper.offsetWidth}`)
+
+        var cropCanvasEle = cropCanvas(canvas,
+            imgEditor.offsetLeft, imgEditor.offsetTop,
+            imgEditor.getBoundingClientRect().width * 2, imgEditor.getBoundingClientRect().height * 2)
+
+        var base64 = cropCanvasEle.toDataURL('image/png')
+        // var base64 = canvas.toDataURL('image/png')
         link.download = 'filename.png';
         link.href = base64
         link.click();
+
         // console.log(base64)
         cvsWrapper.style.zIndex = 0
         wrapper.style = wrapperStyle
@@ -241,7 +262,6 @@ const registerImgEditWrapper = () => {
         if (info.topEnable && imgWrapperHeight > 0) {
             wrapper.style.top = imgWrapperTop + 'px'
             wrapper.style.height = `${imgWrapperHeight}px`
-            console.log(imgWrapperHeight)
         }
         if (info.leftEnable && imgWrapperWidth > 0) {
             wrapper.style.left = imgWrapperLeft + 'px'
@@ -266,7 +286,6 @@ const registerImgEditWrapper = () => {
     })
 
     window.addEventListener('resize', (e) => {
-        console.log(e.target.innerHeight, e.target.innerWidth)
         info.clientRect.width = e.target.innerWidth * info.widthRatio
         info.clientRect.height = e.target.innerHeight * info.heightRatio
     })

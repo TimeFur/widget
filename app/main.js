@@ -3,16 +3,18 @@ window.addEventListener('load', () => {
     var extBtn = document.querySelector("#extensionBtnId")
     var clipBtn = document.querySelector('#clipBtnId')
     var annoBtn = document.querySelector('#annoBtnId')
+
     extBtn.addEventListener('click', (e) => {
-        console.log("extension click-1")
         //iframe to parent
         window.top.postMessage({ cmd: "FROM_WIDGET_GET_SHOOT_IMAGES" }, "*")
     })
 
     clipBtn.addEventListener('click', (e) => {
-        var wrapper = document.querySelector("#editImageWrapper")
-        // navigator.clipboard.writeText("https://i.pinimg.com/236x/32/26/3c/32263c697d9f55a81aa60f77aebc1165.jpg")
-        AnnoInst.clipFunc()
+        // navigator.clipboard.writeText()
+        AnnoInst.clipFunc().then(imgSrc => {
+            console.log("Get image src")
+            window.top.postMessage({ cmd: "FROM_WIDGET_SET_EDIT_IMAGES", imgSrc: imgSrc }, "*")
+        })
     })
 
     annoBtn.addEventListener('click', (e) => {

@@ -7,55 +7,57 @@ const ImageEditor = (id = null) => {
 }
 
 const clipFunc = () => {
-    var wrapper = document.querySelector('#editImageWrapper')
-    var cvsWrapper = document.querySelector('#editSvgWrapper')
-    var topCrop = document.querySelector('#wrapTopCrop')
-    var leftCrop = document.querySelector('#wrapLeftCrop')
-    const wrapperStyle = wrapper.style
+    return new Promise((resolve, reject) => {
+        var wrapper = document.querySelector('#editImageWrapper')
+        var cvsWrapper = document.querySelector('#editSvgWrapper')
+        var topCrop = document.querySelector('#wrapTopCrop')
+        var leftCrop = document.querySelector('#wrapLeftCrop')
+        const wrapperStyle = wrapper.style
 
-    //presetting
-    wrapper.style.background = 'transparent'
-    cvsWrapper.style.zIndex = 3
-    topCrop.style.opacity = 0
-    leftCrop.style.opacity = 0
+        //presetting
+        wrapper.style.background = 'transparent'
+        cvsWrapper.style.zIndex = 3
+        topCrop.style.opacity = 0
+        leftCrop.style.opacity = 0
 
-    const cropCanvas = (sourceCanvas, left, top, width, height) => {
-        let destCanvas = document.createElement('canvas');
-        destCanvas.width = width;
-        destCanvas.height = height;
-        destCanvas.getContext("2d").drawImage(
-            sourceCanvas,
-            left, top, width, height,  // source rect with content to crop
-            0, 0, width, height);      // newCanvas, same size as source rect
-        return destCanvas;
-    }
+        const cropCanvas = (sourceCanvas, left, top, width, height) => {
+            let destCanvas = document.createElement('canvas');
+            destCanvas.width = width;
+            destCanvas.height = height;
+            destCanvas.getContext("2d").drawImage(
+                sourceCanvas,
+                left, top, width, height,  // source rect with content to crop
+                0, 0, width, height);      // newCanvas, same size as source rect
+            return destCanvas;
+        }
 
-    //download
-    html2canvas(wrapper, {
-        logging: true, letterRendering: 1, allowTaint: false, useCORS: true,
-        backgroundColor: null
-    }).then(canvas => {
-        var link = document.createElement('a');
-        var imgEditor = document.querySelector('#imgEditorArea');
-        // console.log(`top: ${imgEditor.offsetTop}px, left:${imgEditor.offsetLeft}px \nheight:${imgEditor.offsetHeight} width:${imgEditor.offsetWidth}`)
-        // console.log(`Wrap top: ${wrapper.offsetTop}px, left:${wrapper.offsetLeft}px \nheight:${wrapper.offsetHeight} width:${wrapper.offsetWidth}`)
+        //download
+        html2canvas(wrapper, {
+            logging: true, letterRendering: 1, allowTaint: false, useCORS: true,
+            backgroundColor: null
+        }).then(canvas => {
+            var link = document.createElement('a');
+            var imgEditor = document.querySelector('#imgEditorArea');
 
-        var cropCanvasEle = cropCanvas(canvas,
-            imgEditor.offsetLeft, imgEditor.offsetTop,
-            imgEditor.getBoundingClientRect().width * 2, imgEditor.getBoundingClientRect().height * 2)
+            var cropCanvasEle = cropCanvas(canvas,
+                imgEditor.offsetLeft, imgEditor.offsetTop,
+                imgEditor.getBoundingClientRect().width * 2, imgEditor.getBoundingClientRect().height * 2)
 
-        var base64 = cropCanvasEle.toDataURL('image/png')
-        // var base64 = canvas.toDataURL('image/png')
-        link.download = 'filename.png';
-        link.href = base64
-        link.click();
+            var base64 = cropCanvasEle.toDataURL('image/png')
+            link.download = 'filename.png';
+            link.href = base64
+            // link.click();
 
-        // console.log(base64)
-        cvsWrapper.style.zIndex = 0
-        wrapper.style = wrapperStyle
-        topCrop.style.opacity = '100%'
-        leftCrop.style.opacity = '100%'
-    });
+            //callback
+            resolve(base64)
+
+            //restore wrapper
+            cvsWrapper.style.zIndex = 0
+            wrapper.style = wrapperStyle
+            topCrop.style.opacity = '100%'
+            leftCrop.style.opacity = '100%'
+        });
+    })
 }
 
 const createAnnotation = () => {

@@ -7,13 +7,15 @@ window.addEventListener('load', () => {
     extBtn.addEventListener('click', (e) => {
         //iframe to parent
         window.top.postMessage({ cmd: "FROM_WIDGET_GET_SHOOT_IMAGES" }, "*")
+        //open by extension local tabs
+        if (chrome.runtime)
+            extensionInst.getAllShoots();
     })
 
     clipBtn.addEventListener('click', (e) => {
         // navigator.clipboard.writeText()
         AnnoInst.clipFunc().then(imgSrc => {
-            console.log("Get image src")
-            window.top.postMessage({ cmd: "FROM_WIDGET_SET_EDIT_IMAGES", imgSrc: imgSrc }, "*")
+            window.localStorage.setItem('oolet-edit-area-img', imgSrc)
         })
     })
 

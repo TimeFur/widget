@@ -138,6 +138,24 @@ const toolSetting = () => {
         SystemInst.resetCountDown()
     })
     settingEle.addEventListener('click', (e) => {
+        data = {
+            'item': "item1",
+            "property": 4
+        }
 
+        fetch('http://localhost:5500/', {
+            method: "POST",
+            // cache: "no-cache",
+            // credentials: "same-origin", // include, *same-origin, omit
+            headers: {
+                // "Content-Type": "application/x-www-form-urlencoded",
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        }).then((res) => {
+            return res.json()
+        }).then((data) => {
+            console.log("Data", data)
+        })
     })
 }

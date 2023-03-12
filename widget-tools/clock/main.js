@@ -143,14 +143,9 @@ const toolSetting = () => {
             "property": 4
         }
 
-        fetch('http://localhost:5500/', {
+        fetch('/', {
             method: "POST",
-            // cache: "no-cache",
-            // credentials: "same-origin", // include, *same-origin, omit
-            headers: {
-                // "Content-Type": "application/x-www-form-urlencoded",
-                "Content-Type": "application/json",
-            },
+            headers: { "Content-Type": "application/json", },
             body: JSON.stringify(data)
         }).then((res) => {
             return res.json()

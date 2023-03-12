@@ -9,7 +9,10 @@ var SystemInst = {
     startCountDown: () => { },
     stopCountDown: () => { },
     resetCountDown: () => { },
+    //notion data structure
+    pagesDict: {}
 }
+const LOCALSTORAGE_KEY = "WIDGET-CLOCK-26s3a1"
 /***********************************
  *              Method
  ***********************************/
@@ -17,6 +20,9 @@ window.addEventListener('load', (e) => {
     settingClockEvent()
     createPagesOption()
     toolSetting()
+
+    //check localstoarge, update relative Database
+    AccessDBStorageFunc()
 })
 
 const settingClockEvent = () => {
@@ -68,6 +74,7 @@ const settingClockEvent = () => {
                 if (hour - 1 < 0) {
                     //stop timer
                     stopCountDown();
+                    timeUpCallback()
                 } else {
                     hour -= 1;
                     min = 59
@@ -92,15 +99,12 @@ const settingClockEvent = () => {
     SystemInst.resetCountDown = resetCountDown
 }
 
-const createPagesOption = () => {
+const createPagesOption = (options = []) => {
     //get db setting
-    var options = [
-        'Reading',
-        'Study',
-        'Writing'
-    ]
     const optionWrapperEle = document.querySelector('#pageSelectWrapperId')
     var selectEle = document.createElement('select')
+    selectEle.id = "pageOptionId"
+    selectEle.style.textOverflow = 'ellipsis'
     options.forEach(item => {
         var optEle = document.createElement('option')
         optEle.textContent = item
@@ -108,6 +112,8 @@ const createPagesOption = () => {
     })
 
     //append to document
+    if (optionWrapperEle.querySelector("#pageOptionId") != null)
+        optionWrapperEle.querySelector("#pageOptionId").remove()
     optionWrapperEle.append(selectEle)
 }
 
@@ -138,19 +144,58 @@ const toolSetting = () => {
         SystemInst.resetCountDown()
     })
     settingEle.addEventListener('click', (e) => {
-        data = {
-            'item': "item1",
-            "property": 4
-        }
-
-        fetch('/', {
-            method: "POST",
-            headers: { "Content-Type": "application/json", },
-            body: JSON.stringify(data)
-        }).then((res) => {
-            return res.json()
-        }).then((data) => {
-            console.log("Data", data)
-        })
+        // var data = {
+        //     dbKey: "9a13afce08094487ab65a5065ed7fbd9"
+        // }
+        // fetch('/getDBFormat', {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json", },
+        //     body: JSON.stringify(data)
+        // }).then((res) => {
+        //     return res.json()
+        // }).then((data) => {
+        //     console.log(data)
+        // })
     })
+}
+
+const timeUpCallback = () => {
+    const selectEle = document.querySelector('#pageSelectWrapperId').querySelector("#pageOptionId")
+    console.log(selectEle)
+}
+
+const AccessDBStorageFunc = () => {
+    const updatePageSelect = (dbKey) => {
+        getDBContent(dbKey)
+            .then((dataList) => {
+                // console.log(dataList)
+                //update select
+                var pageOptionList = []
+                dataList.forEach(item => {
+                    var title = ""
+                    for (const [name, dataItem] of Object.entries(item.properties)) {
+                        if (dataItem.type == 'title') {
+                            title = dataItem[dataItem.type][0].plain_text
+                            pageOptionList.push(title)
+                        }
+                    }
+                    //create link
+                    SystemInst.pagesDict[title] = item
+                })
+                createPagesOption(pageOptionList)
+            })
+    }
+
+    storage = window.localStorage.getItem(LOCALSTORAGE_KEY)
+    if (storage == null) {
+        //create setting page
+        createSettingDBPage(LOCALSTORAGE_KEY).then((dbKey) => {
+            updatePageSelect(dbKey)
+        })
+    } else {
+        var storageJson = JSON.parse(storage)
+        // const dbKey = storage
+        const dbKey = storageJson.dbKey
+        updatePageSelect(dbKey)
+    }
 }

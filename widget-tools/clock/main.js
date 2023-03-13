@@ -195,6 +195,7 @@ const AccessDBStorageFunc = () => {
         })
     } else {
         var storageJson = JSON.parse(storage)
+        // console.log(storageJson)
         // const dbKey = storage
         const dbKey = storageJson.dbKey
         updatePageSelect(dbKey)

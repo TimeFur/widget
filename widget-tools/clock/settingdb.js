@@ -31,7 +31,7 @@ const createSettingDBPage = (storageKey = "") => {
 
         //db-input element
         var dbWrapper = document.createElement('div')
-
+        dbWrapper.id = "dbWrapperId"
         var dbEleInput = document.createElement('input')
         dbEleInput.setAttribute('value', storageJson.dbKey)
         var dbSubmitEle = document.createElement('div')
@@ -41,47 +41,50 @@ const createSettingDBPage = (storageKey = "") => {
         dbSubmitEle.style.cursor = "pointer"
         dbSubmitEle.style.objectFit = "cover"
         dbSubmitEle.append(submitImg)
-        // icons8-enter-24
         dbSubmitEle.addEventListener('click', (e) => {
             var dbId = dbEleInput.value
-            if (dbId == "")
-                return
-            getDBFormat(dbId)
-                .then((dataList) => {
-                    //update select
-                    var { selectEle, valueWrapper } = updatePropertySelect(dataList.properties)
-                    if (dbWrapper.querySelector('#selectDBItemId') != null)
-                        dbWrapper.querySelector('#selectDBItemId').remove()
-                    wrapperEle.append(selectEle)
-                    wrapperEle.append(valueWrapper)
-
-                    //saving localstorage
-                    var storageDBJson = { dbKey: dbId }
-                    window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
-                })
-
-            resolve(dbId)
+            if (dbId != "") {
+                getDBFormatWrapper(dbId, storageKey)
+                resolve(dbId)
+            }
         })
 
         dbWrapper.style.display = "flex"
         dbWrapper.append(dbEleInput)
         dbWrapper.append(dbSubmitEle)
-        //property-select element
-
-        //set val-select element
 
         //wrapper element event and append
         wrapperEle.append(dbWrapper)
         wrapperEle.addEventListener('click', (e) => {
             if (e.target.id == "settingWrapperId") {
+                var selectPropertyEle = wrapperEle.querySelector("#selectDBItemId")
+                var optionEleList = wrapperEle.querySelectorAll("#setValueId")
+                var optionData = []
+                optionEleList.forEach(ele => {
+                    if (ele.checked) {
+                        optionData.push(ele.name)
+                    }
+                })
+
+                if (optionData.length > 0) {
+                    var storageDBJson = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY))
+                    storageDBJson['property'] = selectPropertyEle.value
+                    storageDBJson['options'] = optionData
+                    window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
+                }
+
                 wrapperEle.remove()
             }
         })
         document.body.appendChild(wrapperEle)
+
+        if (storageJson.dbKey != "") {
+            getDBFormatWrapper(storageJson.dbKey, storageKey)
+        }
     })
 }
 
-const updatePropertySelect = (properties = []) => {
+const updatePropertySelect = (properties = [], defaultProperty = undefined, options = []) => {
     selectList = []
     console.log(properties)
 
@@ -106,13 +109,16 @@ const updatePropertySelect = (properties = []) => {
     selectEle.addEventListener('change', (e) => {
         settingValueOptionFunc(selectEle.value, properties)
     })
-    const valueWrapper = settingValueOptionFunc(selectEle.value)
+
+    // if (defaultProperty != undefined)
+    //     selectEle.setAttribute('value', defaultProperty)
+    const valueWrapper = settingValueOptionFunc(selectEle.value, options)
 
     //update default option element
 
     return { selectEle, valueWrapper }
 }
-const settingValueOptionFunc = (selectValue) => {
+const settingValueOptionFunc = (selectValue, defaultOptions = []) => {
     var type = SelectDict[selectValue].type
     var dataList = []
     var selectType = "single"
@@ -126,8 +132,6 @@ const settingValueOptionFunc = (selectValue) => {
         }
     }
 
-    console.log(selectValue, SelectDict[selectValue][type])
-
     //select option element
     const createSelect = (list = [], selectType = "single") => {
         var checkedItem = null
@@ -139,8 +143,9 @@ const settingValueOptionFunc = (selectValue) => {
 
             var selectEle = document.createElement('input')
             selectEle.type = "checkbox"
-            selectEle.name = name + 'Id'
+            selectEle.name = name
             selectEle.value = name + 'Id'
+            selectEle.id = "setValueId"
 
             labelEle.style.display = "flex"
             labelEle.append(selectEle)
@@ -180,4 +185,28 @@ const settingValueOptionFunc = (selectValue) => {
     createSelect(dataList, selectType)
 
     return valueWrapper
+}
+
+const getDBFormatWrapper = (dbId, storageKey) => {
+    const wrapperEle = document.querySelector('#settingWrapperId')
+
+    getDBFormat(dbId)
+        .then((dataList) => {
+            var storageDBJson = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY))
+            var defaultProperty = storageDBJson['property']
+            var defaultOptionList = storageDBJson['options']
+            //update select
+            var { selectEle, valueWrapper } = updatePropertySelect(dataList.properties,
+                defaultProperty,
+                defaultOptionList)
+
+            if (wrapperEle.querySelector("#" + selectEle.id) != null)
+                wrapperEle.querySelector("#" + selectEle.id).remove()
+            wrapperEle.append(selectEle)
+            wrapperEle.append(valueWrapper)
+
+            //saving localstorage
+            var storageDBJson = { dbKey: dbId }
+            window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
+        })
 }

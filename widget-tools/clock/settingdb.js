@@ -68,6 +68,7 @@ const createSettingDBPage = (storageKey = "") => {
 
                 if (optionData.length > 0) {
                     var storageDBJson = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY))
+                    storageDBJson['dbKey'] = dbEleInput.value
                     storageDBJson['property'] = selectPropertyEle.value
                     storageDBJson['options'] = optionData
                     window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
@@ -85,7 +86,8 @@ const createSettingDBPage = (storageKey = "") => {
 }
 
 const updatePropertySelect = (properties = [], defaultProperty = undefined, options = []) => {
-    selectList = []
+    var defaultSelectEle = null
+    var selectList = []
     console.log(properties)
 
     //get title property
@@ -104,17 +106,18 @@ const updatePropertySelect = (properties = [], defaultProperty = undefined, opti
         var optEle = document.createElement('option')
         optEle.textContent = item
         selectEle.append(optEle)
+
+        if (defaultProperty == item)
+            defaultSelectEle = optEle
     })
     selectEle.id = "selectDBItemId"
     selectEle.addEventListener('change', (e) => {
-        settingValueOptionFunc(selectEle.value, properties)
+        settingValueOptionFunc(selectEle.value)
     })
 
-    // if (defaultProperty != undefined)
-    //     selectEle.setAttribute('value', defaultProperty)
+    if (defaultSelectEle != null)
+        defaultSelectEle.setAttribute('selected', true)
     const valueWrapper = settingValueOptionFunc(selectEle.value, options)
-
-    //update default option element
 
     return { selectEle, valueWrapper }
 }
@@ -146,6 +149,14 @@ const settingValueOptionFunc = (selectValue, defaultOptions = []) => {
             selectEle.name = name
             selectEle.value = name + 'Id'
             selectEle.id = "setValueId"
+
+            //set default setting
+            var findFlag = defaultOptions.find(opt => opt == name)
+            if (findFlag) {
+                selectEle.checked = true
+                if (selectType == 'single')
+                    checkedItem = selectEle
+            }
 
             labelEle.style.display = "flex"
             labelEle.append(selectEle)
@@ -206,7 +217,7 @@ const getDBFormatWrapper = (dbId, storageKey) => {
             wrapperEle.append(valueWrapper)
 
             //saving localstorage
-            var storageDBJson = { dbKey: dbId }
-            window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
+            // var storageDBJson = { dbKey: dbId }
+            // window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
         })
 }

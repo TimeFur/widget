@@ -74,8 +74,6 @@ const settingClockEvent = () => {
                 if (hour - 1 < 0) {
                     //stop timer
                     stopCountDown();
-
-
                     timeUpCallback()
                 } else {
                     hour -= 1;
@@ -146,18 +144,9 @@ const toolSetting = () => {
         SystemInst.resetCountDown()
     })
     settingEle.addEventListener('click', (e) => {
-        // var data = {
-        //     dbKey: "9a13afce08094487ab65a5065ed7fbd9"
-        // }
-        // fetch('/getDBFormat', {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json", },
-        //     body: JSON.stringify(data)
-        // }).then((res) => {
-        //     return res.json()
-        // }).then((data) => {
-        //     console.log(data)
-        // })
+        createSettingDBPage(LOCALSTORAGE_KEY).then((dbKey) => {
+            updatePageSelect(dbKey)
+        })
     })
 }
 
@@ -176,28 +165,28 @@ const timeUpCallback = () => {
     setPageData(item.page)
 }
 
-const AccessDBStorageFunc = () => {
-    const updatePageSelect = (dbKey) => {
-        getDBContent(dbKey)
-            .then((dataList) => {
-                // console.log(dataList)
-                //update select
-                var pageOptionList = []
-                dataList.forEach(item => {
-                    var title = ""
-                    for (const [name, dataItem] of Object.entries(item.properties)) {
-                        if (dataItem.type == 'title') {
-                            title = dataItem[dataItem.type][0].plain_text
-                            pageOptionList.push(title)
-                        }
+const updatePageSelect = (dbKey) => {
+    getDBContent(dbKey)
+        .then((dataList) => {
+            // console.log(dataList)
+            //update select
+            var pageOptionList = []
+            dataList.forEach(item => {
+                var title = ""
+                for (const [name, dataItem] of Object.entries(item.properties)) {
+                    if (dataItem.type == 'title') {
+                        title = dataItem[dataItem.type][0].plain_text
+                        pageOptionList.push(title)
                     }
-                    //create link
-                    SystemInst.pagesDict[title] = item
-                })
-                createPagesOption(pageOptionList)
+                }
+                //create link
+                SystemInst.pagesDict[title] = item
             })
-    }
-
+            createPagesOption(pageOptionList)
+        })
+}
+const AccessDBStorageFunc = () => {
+    //get storage-key from server
     storage = window.localStorage.getItem(LOCALSTORAGE_KEY)
     if (storage == null) {
         //create setting page

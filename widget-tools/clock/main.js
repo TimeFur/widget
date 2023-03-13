@@ -74,6 +74,8 @@ const settingClockEvent = () => {
                 if (hour - 1 < 0) {
                     //stop timer
                     stopCountDown();
+
+
                     timeUpCallback()
                 } else {
                     hour -= 1;
@@ -160,8 +162,18 @@ const toolSetting = () => {
 }
 
 const timeUpCallback = () => {
+    //restorage status
+    var startEle = document.querySelector('.tool-start')
+    var imgEle = startEle.querySelector('img')
+    startEle.setAttribute('status', 'start')
+    imgEle.src = "./static/icons8-countdown-32.png"
+    SystemInst.clockStatus = "start"
+
+    //get select page id
     const selectEle = document.querySelector('#pageSelectWrapperId').querySelector("#pageOptionId")
-    console.log(selectEle)
+    var pageName = selectEle.options[selectEle.selectedIndex].text;
+    var item = SystemInst.pagesDict[pageName]
+    setPageData(item.page)
 }
 
 const AccessDBStorageFunc = () => {

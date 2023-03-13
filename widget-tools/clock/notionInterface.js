@@ -28,3 +28,19 @@ const getDBContent = (dbKey = "") => {
         })
     })
 }
+
+const setPageData = (pageKey = "", data = {}) => {
+    return new Promise((resolve) => {
+        request = { pageKey: pageKey }
+        fetch('/setPageData', {
+            method: "POST",
+            headers: { "Content-Type": "application/json", },
+            body: JSON.stringify(request)
+        }).then((res) => {
+            return res.json()
+        }).then((data) => {
+            resolve(data.data)
+        })
+    })
+}
+

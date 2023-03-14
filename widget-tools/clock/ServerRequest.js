@@ -31,7 +31,7 @@ const getDBContent = (dbKey = "") => {
 
 const setPageData = (pageKey = "", data = {}) => {
     return new Promise((resolve) => {
-        request = { pageKey: pageKey }
+        request = { pageKey: pageKey, data: data }
         fetch('/setPageData', {
             method: "POST",
             headers: { "Content-Type": "application/json", },

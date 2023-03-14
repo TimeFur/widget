@@ -68,9 +68,13 @@ const createSettingDBPage = (storageKey = "") => {
 
                 if (optionData.length > 0) {
                     var storageDBJson = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY))
+                    if (storageDBJson == null)
+                        storageDBJson = {}
                     storageDBJson['dbKey'] = dbEleInput.value
                     storageDBJson['property'] = selectPropertyEle.value
                     storageDBJson['options'] = optionData
+                    storageDBJson['type'] = SelectDict[selectPropertyEle.value].type
+
                     window.localStorage.setItem(storageKey, JSON.stringify(storageDBJson))
                 }
 
@@ -204,8 +208,9 @@ const getDBFormatWrapper = (dbId, storageKey) => {
     getDBFormat(dbId)
         .then((dataList) => {
             var storageDBJson = JSON.parse(window.localStorage.getItem(LOCALSTORAGE_KEY))
-            var defaultProperty = storageDBJson['property']
-            var defaultOptionList = storageDBJson['options']
+
+            var defaultProperty = (storageDBJson != null) ? storageDBJson['property'] : ""
+            var defaultOptionList = (storageDBJson != null) ? storageDBJson['options'] : []
             //update select
             var { selectEle, valueWrapper } = updatePropertySelect(dataList.properties,
                 defaultProperty,

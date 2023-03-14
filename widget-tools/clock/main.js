@@ -3,8 +3,8 @@
  ***********************************/
 var SystemInst = {
     clockStatus: "start",
-    resetHour: "30",
-    resetMin: "00",
+    resetHour: "00",
+    resetMin: "01",
     countDownInst: null,
     startCountDown: () => { },
     stopCountDown: () => { },
@@ -17,6 +17,7 @@ const LOCALSTORAGE_KEY = "WIDGET-CLOCK-26s3a1"
  *              Method
  ***********************************/
 window.addEventListener('load', (e) => {
+    window.localStorage.clear()
     settingClockEvent()
     createPagesOption()
     toolSetting()
@@ -162,7 +163,11 @@ const timeUpCallback = () => {
     const selectEle = document.querySelector('#pageSelectWrapperId').querySelector("#pageOptionId")
     var pageName = selectEle.options[selectEle.selectedIndex].text;
     var item = SystemInst.pagesDict[pageName]
-    setPageData(item.page)
+
+    var storage = window.localStorage.getItem(LOCALSTORAGE_KEY)
+    var data = JSON.parse(storage)
+
+    setPageData(item.page, data)
 }
 
 const updatePageSelect = (dbKey) => {

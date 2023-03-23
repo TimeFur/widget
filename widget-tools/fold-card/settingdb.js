@@ -97,9 +97,7 @@ const updatePropertySelect = (properties = [], defaultProperty = undefined, opti
     //get title property
     for (const [name, item] of Object.entries(properties)) {
         var type = item.type
-        if (type == "checkbox"
-            || type == "multi_select"
-            || type == "status")
+        if (name == "Noting-article")
             selectList.push(name)
         SelectDict[name] = item
     }
@@ -121,7 +119,7 @@ const updatePropertySelect = (properties = [], defaultProperty = undefined, opti
 
     if (defaultSelectEle != null)
         defaultSelectEle.setAttribute('selected', true)
-    const valueWrapper = settingValueOptionFunc(selectEle.value, options)
+    const valueWrapper = null; //settingValueOptionFunc(selectEle.value, options)
 
     return { selectEle, valueWrapper }
 }
@@ -218,8 +216,10 @@ const getDBFormatWrapper = (dbId, storageKey) => {
 
             if (wrapperEle.querySelector("#" + selectEle.id) != null)
                 wrapperEle.querySelector("#" + selectEle.id).remove()
-            wrapperEle.append(selectEle)
-            wrapperEle.append(valueWrapper)
+            if (selectEle != null)
+                wrapperEle.append(selectEle)
+            if (valueWrapper != null)
+                wrapperEle.append(valueWrapper)
 
             //saving localstorage
             // var storageDBJson = { dbKey: dbId }

@@ -14,7 +14,7 @@ body{
 
 .container-style{
     position: relative;
-    width:60%;
+    width:90%;
     background-color: rgb(173, 118, 118);
 }
 .fold-wrapper-style{
@@ -32,11 +32,23 @@ body{
     width:100%;
     top:0px;
     cursor: pointer;
-    background:rgb(222,133,155);
+    background:rgb(255, 224, 232);
     transform: rotateX(0deg);
     border: 0.2px dotted;
 }
-
+.choice-style{
+    display: flex;
+    align-items: space-around;
+    justify-content: space-around;
+}
+.choice-item-style{
+    width:30%;
+    text-align: center;
+}
+.choice-item-style:hover{
+    background-color: rgb(103, 237, 244);
+    border-radius: 0.5rem;
+}
 .transition-style{
     transition: all 0.5s ease-in-out;
 }
@@ -44,18 +56,14 @@ body{
 .ques-card-style{
     position: relative;
     width:100%;
+    text-align: center;
     border: 0.2px dotted;
-    /* transition: all 0.5s ease-in-out; */
 }
-
-.ans-card-style{
-    position: relative;
-    transition: all 0.5s ease-in-out;
-    transition-delay: 0.3s;
-    transform-origin: bottom left;
-    border: 1px dotted;
-    background-color: aquamarine;
-    transform: rotate3d(-1,0,0,90deg);
+.correct-style{
+    background-color: rgb(77, 244, 114);
+}
+.incorrect-style{
+    background-color: rgb(255, 24, 24);
 }
 /* page select style */
 .page-select-wrapper{
@@ -73,12 +81,13 @@ body{
 .tool-wrapper-style{
     position: relative;
     display: flex;
-    width: 50%;
+    width: 100%;
+    align-items:center;
     justify-content: space-around;
 }
 
 .tool-reset, .tool-setting,.tool-start{
-    width:20%;
+    /* width:20%; */
     cursor: pointer;
     transition: all 0.25s ease-out;
 }

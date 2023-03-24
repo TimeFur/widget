@@ -127,13 +127,13 @@ const toolSetting = () => {
         var imgEle = startEle.querySelector('img')
         if (st == 'start') {
             startEle.setAttribute('status', 'pause')
-            imgEle.src = "./static/icons8-pause-button-30.png"
+            imgEle.src = "./clock/static/icons8-pause-button-30.png"
             SystemInst.clockStatus = "pause"
 
             SystemInst.startCountDown()
         } else {
             startEle.setAttribute('status', 'start')
-            imgEle.src = "./static/icons8-countdown-32.png"
+            imgEle.src = "./clock/static/icons8-countdown-32.png"
             SystemInst.clockStatus = "start"
 
             SystemInst.stopCountDown()
@@ -155,7 +155,7 @@ const timeUpCallback = () => {
     var startEle = document.querySelector('.tool-start')
     var imgEle = startEle.querySelector('img')
     startEle.setAttribute('status', 'start')
-    imgEle.src = "./static/icons8-countdown-32.png"
+    imgEle.src = "./clock/static/icons8-countdown-32.png"
     SystemInst.clockStatus = "start"
 
     //get select page id

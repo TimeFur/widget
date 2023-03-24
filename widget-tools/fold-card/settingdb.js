@@ -36,7 +36,7 @@ const createSettingDBPage = (storageKey = "") => {
         dbEleInput.setAttribute('value', storageJson.dbKey)
         var dbSubmitEle = document.createElement('div')
         var submitImg = document.createElement('img')
-        submitImg.src = "./static/icons8-enter-24.png"
+        submitImg.src = "./fold-card/static/icons8-enter-24.png"
         submitImg.style.width = "100%"
         dbSubmitEle.style.cursor = "pointer"
         dbSubmitEle.style.objectFit = "cover"
